@@ -1,0 +1,94 @@
++ hola
+- Hola, Soy Betto, estoy aquí para proporcionarte información sobre mattilda, nuestra empresa de servicios financieros para escuelas.\n
+^ \n
+^ *Nuestros teléfonos*\n
+^ *Nuestra dirección*\n
+^ *Nuestros servicios*\n
+^ *Pagina web*\n
+^ *Horarios de atención* \n
+^ *Preguntas frecuentes* ❔\n
+^ *Reporte de Deudores* \n
+
+! var lunes_a_viernes = Horario de atención de Lunes a Viernes\n
+^ De 8:00 am a 6:00 pm
+
+! var fin_de_semana = Fin de semana\n
+^ Estamos cerrados, pero puedes dejar un mensaje en nuestro correo electrónico y te responderemos el lunes.
+
+! var telefono = Nuestro teléfono es +52 55 9276 4892
+
+! var saludo = Hola, Soy Betto, estoy aquí para proporcionarte información sobre mattilda, nuestra empresa de servicios financieros para escuelas.
+^ Nuestra dirección
+
+! var direccion = Nos encontramos ubicados en la Colonia Emiliano Zapata Acapulco Gro
+
+! var servicios = Ofrecemos una gama de servicios financieros a las escuelas, incluyendo la administración de las finanzas escolares, la optimización del presupuesto, y asesoramiento financiero.
+
+! var web = Puedes visitarnos en https://www.mattilda.io/
+
+! var faq = Aquí puedes encontrar algunas respuestas a las preguntas más frecuentes.\n
+^ ¿Cómo podemos ayudar a tu escuela?\n
+^ ¿Qué servicios ofrecemos específicamente?\n
+^ ¿Cómo puedes contactarnos?\n
+
++ [*] lunes [*]
+- <bot lunes_a_viernes>
+
++ [*] martes [*]
+- <bot lunes_a_viernes>
+
++ [*] miercoles [*]
+- <bot lunes_a_viernes>
+
++ [*] jueves [*]
+- <bot lunes_a_viernes>
+
++ [*] viernes [*]
+- <bot lunes_a_viernes>
+
++ [*] sabado [*]
+- <bot fin_de_semana>
+
++ [*] domingo [*]
+- <bot fin_de_semana>
+
++ [*] (horario|horarios|dias|abierto) [*]
+- <bot lunes_a_viernes> \n <bot fin_de_semana>
+
++ como estas
+@ hola
+
++ hay alguien*
+@ hola
+
++ [*] (telefono|celular|cel|telefonos) [*]
+- <bot telefono>
+
++ [*] (direccion|ubicacion|lugar) [*]
+- <bot direccion>
+
++ [*] (servicios|ayuda|financieros) [*]
+- <bot servicios>
+
++ [*] (hola|que onda|que tranza) [*]
+- <bot saludo>
+
++ [*] (pagina web|web|pagina) [*]
+- <bot web>
+
++ [*] (preguntas|faq|dudas) [*]
+- <bot faq>
+
++ [*] (preguntas|faq|dudas) [*]
+- Hola bro
+
+
++ [*] (luis miguel) [*]
+- Aquí tienes un enlace a la mejor canción de Luis Miguel, "Como Yo Te Amé": https://www.youtube.com/watch?v=Xpmc9NwGlGY 💦 💦 🥵 👿
++ [*] pp [*]
+- Puro doble P alv compa
+- https://www.youtube.com/watch?v=3MGSHO8V61Y 🎶 🎵
+
++ *
+- Recuerda que soy un robot, me podrías preguntar de otra forma
+- Intenta hacer tu pregunta de otra manera.
