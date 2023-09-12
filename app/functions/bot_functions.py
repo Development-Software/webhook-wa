@@ -2,8 +2,6 @@ import requests
 import json
 import os
 import datetime
-import io
-from PIL import Image
 from rivescript import RiveScript
 # from .config import onedrive_config, connect_db
 from config import onedrive_config, connect_db
