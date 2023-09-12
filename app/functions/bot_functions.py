@@ -3,8 +3,8 @@ import json
 import os
 import datetime
 from rivescript import RiveScript
-# from .config import onedrive_config, connect_db
-from config import onedrive_config, connect_db
+from .config import onedrive_config, connect_db
+#from config import onedrive_config, connect_db
 
 
 def update_file(config=onedrive_config):
