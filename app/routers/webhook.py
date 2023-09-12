@@ -4,7 +4,8 @@ import os
 from fastapi import HTTPException, Query
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
-from app.functions.bot_functions import log_record, get_name_by_phone, response_button, response_text, response_admin
+from app.functions.bot_functions import log_record, get_name_by_phone, response_button, response_text, response_admin, \
+    response_media
 
 router = APIRouter()
 
@@ -59,7 +60,8 @@ async def receive_webhook(data: dict = None):
                         elif button_payload == "Aclarar una duda" or button_payload == "No tengo dudas":
                             response_wa = response_button(sender_id, name, button_payload, wa_id, timestamp, "doubt")
                         elif button_payload == "Datos de pago":
-                            response_wa= response_button(sender_id, name, button_payload, wa_id, timestamp, "payment_hotel")
+                            response_wa = response_button(sender_id, name, button_payload, wa_id, timestamp,
+                                                          "payment_hotel")
                     elif message_type == "interactive":
                         if message["interactive"]["type"] == "button_reply":
                             interactive_payload = message["interactive"]["button_reply"]["id"]
@@ -69,6 +71,15 @@ async def receive_webhook(data: dict = None):
                             interactive_payload = message["interactive"]["list_reply"]["id"]
                             response_wa = response_button(sender_id, name, interactive_payload, wa_id, timestamp,
                                                           "persons_confirm")
+                    elif message_type == 'image':
+                        mime_type = message["image"]["mime_type"]
+                        id = message["image"]["id"]
+                        response_wa = response_media(sender_id, name, wa_id, mime_type, id, timestamp, "image")
+                    elif message_type == 'document':
+                        mime_type = message["document"]["mime_type"]
+                        id = message["document"]["id"]
+                        filename = message["document"]["filename"]
+                        response_wa = response_media(sender_id, name, wa_id, mime_type, id, timestamp, filename)
                 if response_wa:
                     return JSONResponse(content={"status": "mensaje recibido"}, status_code=200)
                 else:

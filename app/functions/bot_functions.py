@@ -2,8 +2,11 @@ import requests
 import json
 import os
 import datetime
+import io
+from PIL import Image
 from rivescript import RiveScript
-from .config import onedrive_config, connect_db
+# from .config import onedrive_config, connect_db
+from config import onedrive_config, connect_db
 
 
 def update_file(config=onedrive_config):
@@ -350,16 +353,17 @@ def payload_persons_confirm(phone):
         print("[ERROR] payload_persons_confirm")
         print("[ERROR] ", ex)
 
+
 def payload_hotel_pay(phone):
     try:
         message = f"_¡Claro! Te compartimos los datos donde puedes realizar tu pago mediante una transferencia 💳_\n\n" \
-                    "Datos Bancarios:\n" \
-                    "_Banco: *BBVA*_\n" \
-                    "_CLABE: *012180015323778093*_\n" \
-                    "_Tarjeta: *4152313856454314*_\n" \
-                    "_Titular de la cuenta: *Karla Ivone Lemus Segura*_\n\n" \
-                    "_Nota: Te pedimos compartir tu comprobante de pago a en este chat o al numero 5539041134_\n"\
-                    "_!Muchas gracias por tu apoyo!_"
+                  "Datos Bancarios:\n" \
+                  "_Banco: *BBVA*_\n" \
+                  "_CLABE: *012180015323778093*_\n" \
+                  "_Tarjeta: *4152313856454314*_\n" \
+                  "_Titular de la cuenta: *Karla Ivone Lemus Segura*_\n\n" \
+                  "_Nota: Te pedimos compartir tu comprobante de pago a en este chat o al numero 5539041134_\n" \
+                  "_!Muchas gracias por tu apoyo!_"
         payload = json.dumps({
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
@@ -374,6 +378,8 @@ def payload_hotel_pay(phone):
     except Exception as ex:
         print("[ERROR] payload_hotel_pay")
         print("[ERROR] ", ex)
+
+
 def payload_others_message(phone, type):
     try:
         if type == "question":
@@ -557,7 +563,8 @@ def response_text(sender_id, name, text, wa_id, timestamp):
                     insert_message(sender_id, str(name), str(text), str(response), wa_id, timestamp, 'text')
                     if flag == 1:
                         message_for_Admin = f"*Mensaje de {name}*: {text}"
-                        send_response_bot(os.getenv("ADMIN_PHONE"), str(message_for_Admin), False, "admin_alert", sender_id,
+                        send_response_bot(os.getenv("ADMIN_PHONE"), str(message_for_Admin), False, "admin_alert",
+                                          sender_id,
                                           str(name))
                     elif flag == 0:
                         alert_admin(os.getenv("ADMIN_PHONE"), str(name), str(text), sender_id)
@@ -608,3 +615,67 @@ def response_admin(response_id_wa, message):
         print("[ERROR] response_admin")
         print("[ERROR] ", ex)
         return False
+
+def response_media(phone,name,wa_id,mime_type,id,timestamp,filename):
+    try:
+        flag = get_flag_hrs(phone[3:])
+        insert_message(phone, str(name), str(mime_type), str('enviado_admin'), wa_id, timestamp, mime_type)
+        if flag == 1:
+            message_for_Admin = f"*Mensaje de {name}*: {mime_type}"
+            send_response_bot(os.getenv("ADMIN_PHONE"), str(message_for_Admin), False, "admin_alert", phone,str(name))
+            response=send_response_media(os.getenv("ADMIN_PHONE"), mime_type, id,filename)
+            if response == 200:
+                return True
+            else:
+                return False
+        elif flag == 0:
+            alert_admin(os.getenv("ADMIN_PHONE"), str(name), str('media content'), phone)
+            return True
+    except Exception as ex:
+        print("[ERROR] response_media")
+        print("[ERROR] ", ex)
+        return False
+def send_response_media(phone,mime_type,id,filename):
+    try:
+        token = os.environ.get("TOKEN_WA")
+        url = f"https://graph.facebook.com/v17.0/{os.getenv('ID_WA')}/messages"
+        if mime_type == "image/jpeg":
+            payload = json.dumps({
+                "messaging_product": "whatsapp",
+                "recipient_type": "individual",
+                "to": f"{phone}",
+                "type": "image",
+                "image": {
+                    "id": f"{id}",
+                }
+            })
+        elif mime_type == "application/pdf":
+            payload = json.dumps({
+                "messaging_product": "whatsapp",
+                "recipient_type": "individual",
+                "to": f"{phone}",
+                "type": "document",
+                "document": {
+                    "id": f"{id}",
+                    "filename": f"{filename}"
+                }
+            })
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {token}'
+        }
+
+        response = requests.request("POST", url, headers=headers, data=payload)
+        return response.status_code
+    except Exception as ex:
+        print("[ERROR] send_response_media")
+        print("[ERROR] ", ex)
+        return False
+
+
+# if __name__ == "__main__":
+#     response_media = get_media_url('1032020891477027')
+#     url = response_media['url']
+#     id = response_media['sha256']
+#     media_type = response_media['mime_type']
+#     get_media(url, id, media_type)
