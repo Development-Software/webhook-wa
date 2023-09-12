@@ -350,7 +350,30 @@ def payload_persons_confirm(phone):
         print("[ERROR] payload_persons_confirm")
         print("[ERROR] ", ex)
 
-
+def payload_hotel_pay(phone):
+    try:
+        message = f"_¡Claro! Te compartimos los datos donde puedes realizar tu pago mediante una transferencia 💳_\n\n" \
+                    "Datos Bancarios:\n" \
+                    "_Banco: *BBVA*_\n" \
+                    "_CLABE: *012180015323778093*_\n" \
+                    "_Tarjeta: *4152313856454314*_\n" \
+                    "_Titular de la cuenta: *Karla Ivone Lemus Segura*_\n\n" \
+                    "_Nota: Te pedimos compartir tu comprobante de pago a en este chat o al numero 5539041134_\n"\
+                    "_!Muchas gracias por tu apoyo!_"
+        payload = json.dumps({
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "to": f"{phone}",
+            "type": "text",
+            "text": {
+                "preview_url": False,
+                "body": f"{message}"
+            }
+        })
+        return payload
+    except Exception as ex:
+        print("[ERROR] payload_hotel_pay")
+        print("[ERROR] ", ex)
 def payload_others_message(phone, type):
     try:
         if type == "question":
@@ -443,6 +466,8 @@ def response_button(phone, name, payload, wa_id, timestamp, type):
             message_out = "Mensaje respondido"
         elif payload == "No tengo dudas":
             message_out = "Despedida enviada"
+        elif payload == "Datos de pago":
+            message_out = "Datos enviados"
 
         if type == "confirm":
             insert_message(phone, str(name), str(payload), message_out, wa_id, timestamp, 'confirm')
@@ -464,6 +489,11 @@ def response_button(phone, name, payload, wa_id, timestamp, type):
         elif type == "doubt":
             insert_message(phone, str(name), str(payload), message_out, wa_id, timestamp, 'doubt')
             body = payload_doubt_message(phone, payload)
+            send_response(body)
+            return True
+        elif type == "payment_hotel":
+            insert_message(phone, str(name), str(payload), message_out, wa_id, timestamp, 'hotel_pay')
+            body = payload_hotel_pay(phone)
             send_response(body)
             return True
     except Exception as ex:

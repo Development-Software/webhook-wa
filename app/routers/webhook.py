@@ -58,6 +58,8 @@ async def receive_webhook(data: dict = None):
                             response_wa = response_button(sender_id, name, button_payload, wa_id, timestamp, "confirm")
                         elif button_payload == "Aclarar una duda" or button_payload == "No tengo dudas":
                             response_wa = response_button(sender_id, name, button_payload, wa_id, timestamp, "doubt")
+                        elif button_payload == "Datos de pago":
+                            response_wa= response_button(sender_id, name, button_payload, wa_id, timestamp, "payment_hotel")
                     elif message_type == "interactive":
                         if message["interactive"]["type"] == "button_reply":
                             interactive_payload = message["interactive"]["button_reply"]["id"]
