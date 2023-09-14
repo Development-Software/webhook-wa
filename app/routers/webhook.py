@@ -49,8 +49,8 @@ async def receive_webhook(data: dict = None):
                             if "context" in message:
                                 response_id_wa = message["context"]["id"]
                                 response_wa = response_admin(response_id_wa, text)
-                            elif 'comprobante' in text:
-                                response_media(sender_id, name, wa_id,text[text.find(':')+1:], timestamp, "image")
+                            elif 'comprobante' in text.lower():
+                                response_media(sender_id, name, wa_id,text, timestamp, "image")
                             else:
                                 response_wa = response_text(sender_id, "admin", "admin_message", wa_id, timestamp)
                         else:

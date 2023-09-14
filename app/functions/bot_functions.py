@@ -617,31 +617,36 @@ def response_admin(response_id_wa, message):
         return False
 
 
-def response_media(phone, name, wa_id, id, timestamp, filename):
+def response_media(phone, name, wa_id, text, timestamp, filename):
     try:
         flag = get_flag_hrs(phone[3:])
-        mime_type = get_mime_type(id)
-        insert_message(phone, str(name), str(mime_type), str('enviado_admin'), wa_id, timestamp, 'media')
-        if 'comprobante' in mime_type:
+
+        if 'comprobante' in text.lower():
+            media_id = text[text.find(':') + 1:]
+            mime_type = get_mime_type(media_id)
+            insert_message(phone, str(name), str(mime_type), str('enviado_admin'), wa_id, timestamp, 'media')
             message_admin = f"*Mensaje de {name}*: {mime_type}"
             send_response_bot(os.getenv("ADMIN_PHONE"), str(message_admin), False, "admin_alert", phone, str(name))
-            response = send_response_media(os.getenv("ADMIN_PHONE"), mime_type, id, filename)
+            response = send_response_media(os.getenv("ADMIN_PHONE"), mime_type, media_id, filename)
             if response == 200:
                 return True
             else:
                 return False
         else:
             if flag == 1:
+                media_id=text
+                mime_type = get_mime_type(media_id)
                 message_admin = f"*Mensaje de {name}*: {mime_type}"
                 send_response_bot(os.getenv("ADMIN_PHONE"), str(message_admin), False, "admin_alert", phone,
                                   str(name))
-                response = send_response_media(os.getenv("ADMIN_PHONE"), mime_type, id, filename)
+                response = send_response_media(os.getenv("ADMIN_PHONE"), mime_type, media_id, filename)
                 if response != 200:
                     return False
                 else:
                     return True
             elif flag == 0:
-                alert_admin(os.getenv("ADMIN_PHONE"), str(name), str('Media:' + id), phone)
+                media_id = text
+                alert_admin(os.getenv("ADMIN_PHONE"), str(name), str('Comprobante:' + media_id), phone)
                 return True
     except Exception as ex:
         print("[ERROR] response_media")
