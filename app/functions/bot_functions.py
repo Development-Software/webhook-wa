@@ -4,7 +4,9 @@ import os
 import datetime
 from rivescript import RiveScript
 from .config import onedrive_config, connect_db
-#from config import onedrive_config, connect_db
+
+
+# from config import onedrive_config, connect_db
 
 
 def update_file(config=onedrive_config):
@@ -560,8 +562,8 @@ def response_text(sender_id, name, text, wa_id, timestamp):
                     flag = get_flag_hrs(sender_id[3:])
                     insert_message(sender_id, str(name), str(text), str(response), wa_id, timestamp, 'text')
                     if flag == 1:
-                        message_for_Admin = f"*Mensaje de {name}*: {text}"
-                        send_response_bot(os.getenv("ADMIN_PHONE"), str(message_for_Admin), False, "admin_alert",
+                        message_admin = f"*Mensaje de {name}*: {text}"
+                        send_response_bot(os.getenv("ADMIN_PHONE"), str(message_admin), False, "admin_alert",
                                           sender_id,
                                           str(name))
                     elif flag == 0:
@@ -614,29 +616,44 @@ def response_admin(response_id_wa, message):
         print("[ERROR] ", ex)
         return False
 
-def response_media(phone,name,wa_id,mime_type,id,timestamp,filename):
+
+def response_media(phone, name, wa_id, id, timestamp, filename):
     try:
         flag = get_flag_hrs(phone[3:])
-        insert_message(phone, str(name), str(mime_type), str('enviado_admin'), wa_id, timestamp, mime_type)
-        if flag == 1:
-            message_for_Admin = f"*Mensaje de {name}*: {mime_type}"
-            send_response_bot(os.getenv("ADMIN_PHONE"), str(message_for_Admin), False, "admin_alert", phone,str(name))
-            response=send_response_media(os.getenv("ADMIN_PHONE"), mime_type, id,filename)
+        mime_type = get_mime_type(id)
+        insert_message(phone, str(name), str(mime_type), str('enviado_admin'), wa_id, timestamp, 'media')
+        if 'comprobante' in mime_type:
+            message_admin = f"*Mensaje de {name}*: {mime_type}"
+            send_response_bot(os.getenv("ADMIN_PHONE"), str(message_admin), False, "admin_alert", phone, str(name))
+            response = send_response_media(os.getenv("ADMIN_PHONE"), mime_type, id, filename)
             if response == 200:
                 return True
             else:
                 return False
-        elif flag == 0:
-            alert_admin(os.getenv("ADMIN_PHONE"), str(name), str('media content'), phone)
-            return True
+        else:
+            if flag == 1:
+                message_admin = f"*Mensaje de {name}*: {mime_type}"
+                send_response_bot(os.getenv("ADMIN_PHONE"), str(message_admin), False, "admin_alert", phone,
+                                  str(name))
+                response = send_response_media(os.getenv("ADMIN_PHONE"), mime_type, id, filename)
+                if response != 200:
+                    return False
+                else:
+                    return True
+            elif flag == 0:
+                alert_admin(os.getenv("ADMIN_PHONE"), str(name), str('Media:' + id), phone)
+                return True
     except Exception as ex:
         print("[ERROR] response_media")
         print("[ERROR] ", ex)
         return False
-def send_response_media(phone,mime_type,id,filename):
+
+
+def send_response_media(phone, mime_type, id, filename):
     try:
         token = os.environ.get("TOKEN_WA")
         url = f"https://graph.facebook.com/v17.0/{os.getenv('ID_WA')}/messages"
+        payload = ""
         if mime_type == "image/jpeg":
             payload = json.dumps({
                 "messaging_product": "whatsapp",
@@ -662,7 +679,6 @@ def send_response_media(phone,mime_type,id,filename):
             'Content-Type': 'application/json',
             'Authorization': f'Bearer {token}'
         }
-
         response = requests.request("POST", url, headers=headers, data=payload)
         return response.status_code
     except Exception as ex:
@@ -670,6 +686,23 @@ def send_response_media(phone,mime_type,id,filename):
         print("[ERROR] ", ex)
         return False
 
+
+def get_mime_type(id):
+    try:
+        token = os.environ.get("TOKEN_WA")
+        url = f"https://graph.facebook.com/v17.0/{int(id)}"
+        payload = {}
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {token}'
+        }
+        response = requests.request("GET", url, headers=headers, data=payload)
+        mime_type = response.json()["mime_type"]
+        return mime_type
+    except Exception as ex:
+        print("[ERROR] get_mime_type")
+        print("[ERROR] ", ex)
+        return False
 
 # if __name__ == "__main__":
 #     response_media = get_media_url('1032020891477027')

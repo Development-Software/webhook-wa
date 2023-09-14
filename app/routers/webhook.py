@@ -49,6 +49,8 @@ async def receive_webhook(data: dict = None):
                             if "context" in message:
                                 response_id_wa = message["context"]["id"]
                                 response_wa = response_admin(response_id_wa, text)
+                            elif 'comprobante' in text:
+                                response_media(sender_id, name, wa_id,text[text.find(':')+1:], timestamp, "image")
                             else:
                                 response_wa = response_text(sender_id, "admin", "admin_message", wa_id, timestamp)
                         else:
@@ -74,12 +76,12 @@ async def receive_webhook(data: dict = None):
                     elif message_type == 'image':
                         mime_type = message["image"]["mime_type"]
                         id = message["image"]["id"]
-                        response_wa = response_media(sender_id, name, wa_id, mime_type, id, timestamp, "image")
+                        response_wa = response_media(sender_id, name, wa_id, id, timestamp, "image")
                     elif message_type == 'document':
                         mime_type = message["document"]["mime_type"]
                         id = message["document"]["id"]
                         filename = message["document"]["filename"]
-                        response_wa = response_media(sender_id, name, wa_id, mime_type, id, timestamp, filename)
+                        response_wa = response_media(sender_id, name, wa_id, id, timestamp, filename)
                 if response_wa:
                     return JSONResponse(content={"status": "mensaje recibido"}, status_code=200)
                 else:
