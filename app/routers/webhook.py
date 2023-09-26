@@ -50,7 +50,7 @@ async def receive_webhook(data: dict = None):
                                 response_id_wa = message["context"]["id"]
                                 response_wa = response_admin(response_id_wa, text)
                             elif 'comprobante' in text.lower():
-                                response_media(sender_id, name, wa_id,text, timestamp, "image")
+                                response_media(sender_id, name, wa_id, text, timestamp, "image")
                             else:
                                 response_wa = response_text(sender_id, "admin", "admin_message", wa_id, timestamp)
                         else:
@@ -64,6 +64,9 @@ async def receive_webhook(data: dict = None):
                         elif button_payload == "Datos de pago":
                             response_wa = response_button(sender_id, name, button_payload, wa_id, timestamp,
                                                           "payment_hotel")
+                        elif button_payload == "Me interesa" or button_payload == 'No, gracias':
+                            response_wa = response_button(sender_id, name, button_payload, wa_id, timestamp,
+                                                          "hotel_option")
                     elif message_type == "interactive":
                         if message["interactive"]["type"] == "button_reply":
                             interactive_payload = message["interactive"]["button_reply"]["id"]
