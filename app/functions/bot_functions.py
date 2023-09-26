@@ -4,6 +4,7 @@ import os
 import datetime
 from rivescript import RiveScript
 from .config import onedrive_config, connect_db
+from ..functions.whatsapp_messages import *
 
 
 # from config import onedrive_config, connect_db
@@ -441,6 +442,30 @@ def payload_doubt_message(phone, payload):
         print("[ERROR] ", ex)
 
 
+def payload_hotel_option(phone, name, payload):
+    try:
+        if (payload == "Me interesa"):
+            message = f"_¡Claro!_\n\n" \
+                      "_El costo de la habitación por el fin de semana completo es de $3,800._\n\n" \
+                      "_En caso de seguir interesado podrías realizar el pago mediante una transferencia bancaria._\n\n" \
+                      "_Datos Bancarios:_\n" \
+                      "_Banco: *BBVA*_\n" \
+                      "_CLABE: *012180015323778093*_\n" \
+                      "_Tarjeta: *4152313856454314*_\n" \
+                      "_Titular de la cuenta: *Karla Ivone Lemus Segura*_\n\n" \
+                      "_Nota: Te pedimos compartir tu comprobante de pago a en este chat o al numero 5539041134_\n" \
+                      "_!Muchas gracias por tu apoyo!_"
+        elif payload == "No, gracias":
+            message = f"_¡Muchas gracias por tu respuesta!_\n\n" \
+                      "_Recuerda que si tienes alguna duda con las instrucciones de la invitación o las opciones de hospedaje no dudes en contactarnos 📱_"
+
+        payload_out = payload_message_text(phone, message, False)
+        return payload_out
+    except Exception as ex:
+        print("[ERROR] payload_hotel_option")
+        print("[ERROR] ", ex)
+
+
 def send_response(payload_body):
     try:
         token = os.environ.get("TOKEN_WA")
@@ -474,6 +499,10 @@ def response_button(phone, name, payload, wa_id, timestamp, type):
             message_out = "Despedida enviada"
         elif payload == "Datos de pago":
             message_out = "Datos enviados"
+        elif payload == "Me interesa":
+            message_out = "Datos enviados"
+        elif payload == "No, gracias":
+            message_out = "Despedida enviada"
 
         if type == "confirm":
             insert_message(phone, str(name), str(payload), message_out, wa_id, timestamp, 'confirm')
@@ -502,6 +531,10 @@ def response_button(phone, name, payload, wa_id, timestamp, type):
             body = payload_hotel_pay(phone)
             send_response(body)
             return True
+        elif type == "hotel_option":
+            insert_message(phone, str(name), str(payload), message_out, wa_id, timestamp, 'hotel_option')
+            body = payload_hotel_option(phone, name, payload)
+            send_response(body)
     except Exception as ex:
         print("[ERROR] response_button")
         print("[ERROR] ", ex)
@@ -634,7 +667,7 @@ def response_media(phone, name, wa_id, text, timestamp, filename):
                 return False
         else:
             if flag == 1:
-                media_id=text
+                media_id = text
                 mime_type = get_mime_type(media_id)
                 message_admin = f"*Mensaje de {name}*: {mime_type}"
                 send_response_bot(os.getenv("ADMIN_PHONE"), str(message_admin), False, "admin_alert", phone,
