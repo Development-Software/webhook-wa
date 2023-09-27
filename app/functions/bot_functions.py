@@ -447,19 +447,15 @@ def payload_hotel_option(phone, name, payload):
         if (payload == "Me interesa"):
             message = f"_¡Claro!_\n\n" \
                       "_El costo de la habitación por el fin de semana completo es de $3,800._\n\n" \
-                      "_En caso de seguir interesado podrías realizar el pago mediante una transferencia bancaria._\n\n" \
-                      "_Datos Bancarios:_\n" \
-                      "_Banco: *BBVA*_\n" \
-                      "_CLABE: *012180015323778093*_\n" \
-                      "_Tarjeta: *4152313856454314*_\n" \
-                      "_Titular de la cuenta: *Karla Ivone Lemus Segura*_\n\n" \
-                      "_Nota: Te pedimos compartir tu comprobante de pago a en este chat o al numero 5539041134_\n" \
+                      "_Puede ser una habitación sencilla o doble(depende la disponibilidad)._\n\n" \
+                      "_En caso de seguir interesado, podriamos compartirte los datos de pago para que conluyamos el proceso de resevación._\n\n" \
                       "_!Muchas gracias por tu apoyo!_"
         elif payload == "No, gracias":
             message = f"_¡Muchas gracias por tu respuesta!_\n\n" \
                       "_Recuerda que si tienes alguna duda con las instrucciones de la invitación o las opciones de hospedaje no dudes en contactarnos 📱_"
 
-        payload_out = payload_message_text(phone, message, False)
+        #payload_out = payload_message_text(phone, message, False)
+        payload_out = payload_message_button(phone, message, [{"id": "pay", "title": "Reservar"}, {"id": "decline", "title": "No, gracias"}])
         return payload_out
     except Exception as ex:
         print("[ERROR] payload_hotel_option")
@@ -503,6 +499,8 @@ def response_button(phone, name, payload, wa_id, timestamp, type):
             message_out = "Datos enviados"
         elif payload == "No, gracias":
             message_out = "Despedida enviada"
+        elif payload == "Reservar":
+            message_out = "Datos enviados"
 
         if type == "confirm":
             insert_message(phone, str(name), str(payload), message_out, wa_id, timestamp, 'confirm')
@@ -535,6 +533,15 @@ def response_button(phone, name, payload, wa_id, timestamp, type):
             insert_message(phone, str(name), str(payload), message_out, wa_id, timestamp, 'hotel_option')
             body = payload_hotel_option(phone, name, payload)
             send_response(body)
+            return True
+        elif type == "hotel_appointment":
+            insert_message(phone, str(name), str(payload), message_out, wa_id, timestamp, 'hotel_appointment')
+            if payload == "Reservar":
+                body = payload_hotel_pay(phone)
+                send_response(body)
+            else:
+                body = payload_hotel_option(phone, name, payload)
+                send_response(body)
             return True
     except Exception as ex:
         print("[ERROR] response_button")
