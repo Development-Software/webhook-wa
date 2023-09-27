@@ -535,6 +535,7 @@ def response_button(phone, name, payload, wa_id, timestamp, type):
             insert_message(phone, str(name), str(payload), message_out, wa_id, timestamp, 'hotel_option')
             body = payload_hotel_option(phone, name, payload)
             send_response(body)
+            return True
     except Exception as ex:
         print("[ERROR] response_button")
         print("[ERROR] ", ex)
