@@ -455,7 +455,7 @@ def payload_hotel_option(phone, name, payload):
                       "_Recuerda que si tienes alguna duda con las instrucciones de la invitación o las opciones de hospedaje no dudes en contactarnos 📱_"
 
         #payload_out = payload_message_text(phone, message, False)
-        payload_out = payload_message_button(phone, message, [{"id": "pay", "title": "Reservar"}, {"id": "decline", "title": "No, gracias"}])
+        payload_out = payload_message_button(phone, message, [{"id": "Reservar", "title": "Reservar"}, {"id": "decline", "title": "No, gracias"}])
         return payload_out
     except Exception as ex:
         print("[ERROR] payload_hotel_option")
