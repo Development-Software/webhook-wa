@@ -67,13 +67,13 @@ async def receive_webhook(data: dict = None):
                         elif button_payload == "Me interesa" or button_payload == 'No, gracias':
                             response_wa = response_button(sender_id, name, button_payload, wa_id, timestamp,
                                                           "hotel_option")
-                        elif button_payload == "Reservar" or button_payload == 'No, gracias':
-                            response_wa = response_button(sender_id, name, button_payload, wa_id, timestamp,
-                                                          "hotel_appointment")
                     elif message_type == "interactive":
                         if message["interactive"]["type"] == "button_reply":
                             interactive_payload = message["interactive"]["button_reply"]["id"]
-                            response_wa = response_button(sender_id, name, interactive_payload, wa_id, timestamp,
+                            if interactive_payload=="Reservar" or interactive_payload=="No, gracias":
+                                response_wa = response_button(sender_id, name, interactive_payload, wa_id, timestamp,"hotel_appointment")
+                            else:
+                                response_wa = response_button(sender_id, name, interactive_payload, wa_id, timestamp,
                                                           "food_confirm")
                         elif message["interactive"]["type"] == "list_reply":
                             interactive_payload = message["interactive"]["list_reply"]["id"]
