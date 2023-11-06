@@ -79,11 +79,11 @@ async def receive_webhook(data: dict = None):
                             interactive_payload = message["interactive"]["list_reply"]["id"]
                             response_wa = response_button(sender_id, name, interactive_payload, wa_id, timestamp,
                                                           "persons_confirm")
-                    elif message_type == 'image':
+                    elif message_type == 'image' and sender_id[3:] != os.getenv("ADMIN_PHONE"):
                         mime_type = message["image"]["mime_type"]
                         id = message["image"]["id"]
                         response_wa = response_media(sender_id, name, wa_id, id, timestamp, "image")
-                    elif message_type == 'document':
+                    elif message_type == 'document' and sender_id[3:] != os.getenv("ADMIN_PHONE"):
                         mime_type = message["document"]["mime_type"]
                         id = message["document"]["id"]
                         filename = message["document"]["filename"]
