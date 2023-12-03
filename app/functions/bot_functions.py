@@ -593,7 +593,7 @@ def response_text(sender_id, name, text, wa_id, timestamp):
             send_response_bot(sender_id, message_admin, False, "message_text", sender_id, str(name))
             return True
         else:
-            response = bot_chat(text)
+            response = "duda_invitado"
             if response != "":
 
                 if response != "duda_invitado":
